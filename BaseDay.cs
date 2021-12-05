@@ -1,12 +1,19 @@
-using System.Net;
-
 public abstract class BaseDay
 {
-    protected string InputFileName { get; }
+    public string InputFileName { get; }
     public List<string> Input => File.ReadAllLines(InputFileName).ToList();
 
-    public BaseDay(string inputFileName)
+    protected BaseDay(string inputFileName)
     {
         InputFileName = inputFileName;
+    }
+
+    public virtual void RunA() {
+
+    }
+
+    
+    public virtual void RunB() {
+        
     }
 }

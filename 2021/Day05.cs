@@ -1,32 +1,22 @@
 public class Day05 : BaseDay
 {
     public Day05(string inputFileName) : base(inputFileName)
+    { }
+    
+    public override void RunA()
     {
-
-    }
-    public void RunA()
-    {
-        var input = File.ReadAllLines(@".\day05.input.txt").ToList();
-        var points = ParseHorizontalVerticalLines(input);
+        var points = ParseHorizontalVerticalLines(Input);
         var groupPoints = points.GroupBy(x => x);
         int overlapPoints = groupPoints.Count(x => x.Count() > 1);
         System.Console.WriteLine($"Number of overlapping points {overlapPoints}");
     }
 
-    public void RunB()
+    public override void RunB()
     {
-        var input = File.ReadAllLines(@".\day05.input.txt").ToList();
-        var points = ParseHorizontalVerticalLines(input, true);
+        var points = ParseHorizontalVerticalLines(Input, true);
         var groupPoints = points.GroupBy(x => x);
         int overlapPoints = groupPoints.Count(x => x.Count() > 1);
         System.Console.WriteLine($"Number of overlapping points {overlapPoints}");
-    }
-
-    static List<(int, int)> ParseDiagonalLines(List<string> input)
-    {
-
-        // if (point1.x1 == point2.x2)
-        throw new NotImplementedException();
     }
 
     static List<(int, int)> ParseHorizontalVerticalLines(List<string> input, bool diagonal = false)
@@ -71,7 +61,6 @@ public class Day05 : BaseDay
 
         }
         return linePoints;
-        // throw new NotImplementedException();
     }
 
     private static List<(int x, int y)> GenerateDiagList((int x, int y) point1, (int x, int y) point2)
