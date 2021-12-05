@@ -1,6 +1,6 @@
-public class Day05 : BaseDay
+public class Aoc2021_Day05 : BaseDay
 {
-    public Day05(string inputFileName) : base(inputFileName)
+    public Aoc2021_Day05(string inputFileName) : base(inputFileName)
     { }
     
     public override void RunA()

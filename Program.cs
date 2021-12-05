@@ -5,12 +5,21 @@ using Microsoft.Extensions.Configuration;
 // Used code from https://github.com/viceroypenguin/adventofcode/blob/master/Program.cs
 public static class Program
 {
+    public static string ClassName { get; set; }
+
+    static Program()
+    {
+        var today = DateTime.Now;
+        ClassName = $"Aoc{today.Year}_Day{today.Day:00}";
+    }
+
     public static async Task Main(string[] args)
     {
         // TODO: if date is in args, else today
         var today = DateTime.Now;
 
         System.Console.WriteLine($"Running day {today.Day:00} year {today.Year}");
+        ClassName = $"Aoc{today.Year}_Day{today.Day:00}";
 
         string sessionId = BuildAndGetConfiguration();
         var inputFileName = await DownloadInputFile(today, sessionId);
@@ -22,7 +31,7 @@ public static class Program
     private static void RunTodaysInstanceMethods(DateTime today, string inputFileName)
     {
         var todaysClass = Assembly.GetExecutingAssembly().GetTypes()
-                          .FirstOrDefault(t => t.BaseType == typeof(BaseDay) && t.Name == $"Day{today.Day:00}");
+                          .FirstOrDefault(t => t.BaseType == typeof(BaseDay) && t.Name == ClassName);
 
         if (todaysClass != null)
         {
@@ -55,7 +64,7 @@ public static class Program
 
     private static bool CreateTodaysCsFileNeeded(DateTime today)
     {
-        var csFile = $"{today.Year}/Day{today.Day:00}.cs";
+        var csFile = $"{today.Year}/{ClassName}.cs";
         if (!File.Exists(csFile))
         {
             File.WriteAllText(csFile, GetDayTemplate(today));
@@ -80,7 +89,7 @@ public static class Program
             BaseAddress = baseAddress,
         };
 
-        var inputFile = $@"{dateToDownload.Year}\day{dateToDownload.Day:00}.input.txt";
+        var inputFile = $@"{dateToDownload.Year}\Aoc{dateToDownload.Year}_Day{dateToDownload.Day:00}.input.txt";
         if (!Directory.Exists(dateToDownload.Year.ToString()))
             Directory.CreateDirectory(dateToDownload.Year.ToString());
         if (!File.Exists(inputFile))
@@ -94,9 +103,11 @@ public static class Program
 
     private static string GetDayTemplate(DateTime dateTime)
     {
-        var test = $@"public class Day{dateTime.Day:00} : BaseDay
+        var className = $"Aoc{dateTime.Year}_Day{dateTime.Day:00}";
+
+        var test = $@"public class {className} : BaseDay
 {{
-    public Day{dateTime.Day:00}(string inputFileName) : base(inputFileName)
+    public {className}(string inputFileName) : base(inputFileName)
     {{  }}
 
     public override void RunA()
@@ -111,8 +122,4 @@ public static class Program
 }}";
         return test;
     }
-
-
-
 }
-
