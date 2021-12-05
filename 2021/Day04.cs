@@ -1,5 +1,6 @@
 public class Day04 : BaseDay
 {
+    private bool ReturnFirst { get; set; } = true;
     public Day04(string inputFileName) : base(inputFileName)
     { }
 
@@ -20,12 +21,18 @@ public class Day04 : BaseDay
             bingoBoards.Add(new BingoBoard(oneBoardCleanup));
         }
 
-        int score = PlayBingo(bingoNumbers, bingoBoards);
+        int score = PlayBingo(bingoNumbers, bingoBoards, ReturnFirst);
 
         System.Console.WriteLine($"Total score {score}");
     }
 
-    private int PlayBingo(List<int> bingoNumbers, List<BingoBoard> bingoBoards)
+    public override void RunB()
+    {
+        ReturnFirst = false;
+        RunA();
+    }
+
+    private int PlayBingo(List<int> bingoNumbers, List<BingoBoard> bingoBoards, bool returnFirst = true)
     {
         int score = 0;
         for (int bingoNr = 1; bingoNr < bingoNumbers.Count(); bingoNr++)
@@ -37,7 +44,12 @@ public class Day04 : BaseDay
                 var isBingo = boardExceptMarked.Any(x => x.Count() == 0);
                 if (isBingo)
                 {
-                    return CalculateScore(boardExceptMarked, numbersDrawn.Last());
+                    board.SetBingo();
+                    score = CalculateScore(boardExceptMarked, numbersDrawn.Last());
+                    if (returnFirst)
+                        return score;
+                    if (!returnFirst && bingoBoards.All(b => b.Bingo == true))
+                        return score;
                 }
             }
         }
@@ -52,14 +64,17 @@ public class Day04 : BaseDay
         return unmarkedSum * last;
     }
 
-    public override void RunB()
-    {
 
-    }
 }
 
 public class BingoBoard
 {
+    public bool Bingo { get; private set; }
+    public void SetBingo()
+    {
+        Bingo = true;
+    }
+
     public List<List<int>> Board { get; } = new List<List<int>>();
     public BingoBoard(IEnumerable<string> inputBoard)
     {

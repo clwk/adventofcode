@@ -5,12 +5,12 @@ using Microsoft.Extensions.Configuration;
 // Used code from https://github.com/viceroypenguin/adventofcode/blob/master/Program.cs
 public static class Program
 {
-    // private static DateTime Today { get; set; }
-
     public static async Task Main(string[] args)
     {
-        // if date is in args, else today
-        var today = new DateTime(2021, 12, 5);
+        // TODO: if date is in args, else today
+        var today = DateTime.Now;
+
+        System.Console.WriteLine($"Running day {today.Day:00} year {today.Year}");
 
         string sessionId = BuildAndGetConfiguration();
         var inputFileName = await DownloadInputFile(today, sessionId);
@@ -35,7 +35,7 @@ public static class Program
         }
         else
         {
-            System.Console.WriteLine($"Class file for {today.ToShortDateString} not found, please rerun. ");
+            System.Console.WriteLine($"Class file for Day {today.Day:00} not found, please rerun. ");
         }
     }
 
@@ -97,9 +97,8 @@ public static class Program
         var test = $@"public class Day{dateTime.Day:00} : BaseDay
 {{
     public Day{dateTime.Day:00}(string inputFileName) : base(inputFileName)
-    {{
+    {{  }}
 
-    }}
     public override void RunA()
     {{
     
