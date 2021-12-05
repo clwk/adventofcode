@@ -1,5 +1,7 @@
-public class Day02
+public class Aoc2021_Day02 : BaseDay
 {
+    public Aoc2021_Day02(string inputFileName) : base(inputFileName)
+    { }
     public enum Direction
     {
         forward,
@@ -16,13 +18,11 @@ public class Day02
         _ => (0, 0)
     };
 
-    public void RunA()
+    public override void RunA()
     {
-        var input = File.ReadAllLines(@".\day02.input.txt").ToList();
-
         (int forward, int up) position = (0, 0);
 
-        foreach (var line in input)
+        foreach (var line in Input)
         {
             var directionStepsize = line.Split(' ');
             var relativePosition = FromDirection(
@@ -47,13 +47,11 @@ public class Day02
             _ => (0, 0, 0)
         };
 
-    public void RunB()
+    public override void RunB()
     {
-        var input = File.ReadAllLines(@".\day02.input.txt").ToList();
-
         (int forward, int up, int aim) position = (0, 0, 0);
 
-        foreach (var line in input)
+        foreach (var line in Input)
         {
             var directionStepsize = line.Split(' ');
             var relativePosition = FromDirectionB(

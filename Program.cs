@@ -5,27 +5,26 @@ using Microsoft.Extensions.Configuration;
 // Used code from https://github.com/viceroypenguin/adventofcode/blob/master/Program.cs
 public static class Program
 {
-    public static string ClassName { get; set; }
+    private static string ClassName { get; set; }
+    public static DateTime Today { get; set; } = DateTime.Now;
 
     static Program()
     {
-        var today = DateTime.Now;
-        ClassName = $"Aoc{today.Year}_Day{today.Day:00}";
+        ClassName = $"Aoc{Today.Year}_Day{Today.Day:00}";
     }
 
     public static async Task Main(string[] args)
     {
         // TODO: if date is in args, else today
-        var today = DateTime.Now;
+        // var today = DateTime.Now;
 
-        System.Console.WriteLine($"Running day {today.Day:00} year {today.Year}");
-        ClassName = $"Aoc{today.Year}_Day{today.Day:00}";
+        System.Console.WriteLine($"Running {ClassName}");
 
         string sessionId = BuildAndGetConfiguration();
-        var inputFileName = await DownloadInputFile(today, sessionId);
+        var inputFileName = await DownloadInputFile(Today, sessionId);
 
-        CreateTodaysCsFileNeeded(today);
-        RunTodaysInstanceMethods(today, inputFileName);
+        CreateTodaysCsFileNeeded(Today);
+        RunTodaysInstanceMethods(Today, inputFileName);
     }
 
     private static void RunTodaysInstanceMethods(DateTime today, string inputFileName)
