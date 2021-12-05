@@ -1,27 +1,28 @@
-public class Day03
+public class Aoc2021_Day03 : BaseDay
 {
-    public void RunA()
-    {
-        var input = File.ReadAllLines(@".\day03.input.txt");//.ToList();
+    public Aoc2021_Day03(string inputFileName) : base(inputFileName)
+    {  }
 
+    public override void RunA()
+    {
         int skip = 0;
 
         var gammaString = "";
-        var newInput = input.Select(x => string.Concat(x.Skip(skip))).ToArray();
+        var newInput = Input.Select(x => string.Concat(x.Skip(skip))).ToArray();
 
         while (!string.IsNullOrEmpty(newInput[0]))
         {
             var nr1 = newInput.Select(x => x.First()).Count(x => x == '1');
-            if (nr1 > input.Count() / 2)
+            if (nr1 > Input.Count() / 2)
                 gammaString += "1";
             else
                 gammaString += "0";
             skip++;
-            newInput = input.Select(x => string.Concat(x.Skip(skip))).ToArray();
+            newInput = Input.Select(x => string.Concat(x.Skip(skip))).ToArray();
         }
 
         var gammaBits = Convert.ToInt32(gammaString, 2);
-        var xorString = new string('1', input[0].Length);
+        var xorString = new string('1', Input[0].Length);
         var xorBits = Convert.ToInt32(xorString, 2);
 
         var epsilonBits = gammaBits ^ xorBits;
@@ -33,12 +34,10 @@ public class Day03
         System.Console.WriteLine($"Power consumption {gammaBits * epsilonBits}");
     }
 
-    public void RunB()
+    public override void RunB()
     {
-        var input = File.ReadAllLines(@".\day03.input.txt");//.ToList();
-
-        string oxyRating = GetRating(input);
-        string coRating = GetRating(input, '0');
+        string oxyRating = GetRating(Input.ToArray());
+        string coRating = GetRating(Input.ToArray(), '0');
 
         var oxyBits = Convert.ToInt32(oxyRating, 2);
         var coBits = Convert.ToInt32(coRating, 2);
@@ -49,14 +48,14 @@ public class Day03
         System.Console.WriteLine($"Suuport rating {oxyBits * coBits}");
     }
 
-    private static string GetRating(string[] input, char preferChar = '1')
+    private static string GetRating(string[] Input, char preferChar = '1')
     {
         int skip = 0;
 
-        var newInput = input.Select(x => string.Concat(x.Skip(skip))).ToArray();
+        var newInput = Input.Select(x => string.Concat(x.Skip(skip))).ToArray();
         var lastchar = ' ';
 
-        while (skip < input[0].Length && newInput.Length > 1)
+        while (skip < Input[0].Length && newInput.Length > 1)
         {
             var nr1 = newInput.Select(x => x[skip]).Count(x => x == '1');
             var nr0 = newInput.Select(x => x[skip]).Count(x => x == '0');
