@@ -1,7 +1,7 @@
-public class Day04 : BaseDay
+public class Aoc2021_Day04 : BaseDay
 {
     private bool ReturnFirst { get; set; } = true;
-    public Day04(string inputFileName) : base(inputFileName)
+    public Aoc2021_Day04(string inputFileName) : base(inputFileName)
     { }
 
     public override void RunA()
@@ -66,6 +66,7 @@ public class Day04 : BaseDay
 
 
 }
+
 
 public class BingoBoard
 {
