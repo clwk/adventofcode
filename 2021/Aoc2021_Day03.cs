@@ -1,7 +1,7 @@
 public class Aoc2021_Day03 : BaseDay
 {
     public Aoc2021_Day03(string inputFileName) : base(inputFileName)
-    {  }
+    { }
 
     public override void RunA()
     {

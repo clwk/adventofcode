@@ -2,6 +2,7 @@ public class Aoc2021_Day01 : BaseDay
 {
     public Aoc2021_Day01(string inputFileName) : base(inputFileName)
     { }
+    
     public override void RunA()
     {
         var diffs = Input.Select((val, idx) =>

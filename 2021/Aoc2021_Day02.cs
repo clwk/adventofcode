@@ -2,6 +2,7 @@ public class Aoc2021_Day02 : BaseDay
 {
     public Aoc2021_Day02(string inputFileName) : base(inputFileName)
     { }
+    
     public enum Direction
     {
         forward,
