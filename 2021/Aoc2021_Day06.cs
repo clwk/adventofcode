@@ -6,17 +6,16 @@ public class Aoc2021_Day06 : BaseDay
     public override void RunA()
     {
         var initialPopulation = Input[0].Split(',').Select(x => int.Parse(x)).ToList();
-        List<List<int>> PopulationsByDay = new List<List<int>>();
-        PopulationsByDay.Add(initialPopulation);
 
+        List<int> nextDay = new List<int>(initialPopulation);
         for (int day = 1; day <= 80; day++)
         {
-            List<int> nextDay = GetNextPopulation(PopulationsByDay[day - 1]);
-            // System.Console.WriteLine(string.Join(",", nextDay.ToArray()));
-            PopulationsByDay.Add(nextDay);
+            nextDay = GetNextPopulation(nextDay);
+            // System.Console.WriteLine($"Day {day}: " + string.Join(",", nextDay.ToArray()) + $". Count {nextDay.Count()}");
+            System.Console.WriteLine($"Day {day}: " + $". Count {nextDay.Count()}");
         }
 
-        System.Console.WriteLine($"Fish count: {PopulationsByDay.Last().Count()}");
+        System.Console.WriteLine($"Fish count: {nextDay.Count()}");
     }
 
     private List<int> GetNextPopulation(List<int> initialPopulation)
@@ -41,6 +40,7 @@ public class Aoc2021_Day06 : BaseDay
 
     public override void RunB()
     {
+        var initialPopulation = Input[0].Split(',').Select(x => int.Parse(x)).ToList();
 
     }
 }
