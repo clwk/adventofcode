@@ -42,29 +42,24 @@ public class Aoc2021_Day06 : BaseDay
     {
         var initialPopulation = Input[0].Split(',').Select(x => int.Parse(x)).ToList();
 
-        List<int> currentFishes = new(initialPopulation);
-        List<int> newFishes = new();
-        int targetDay = 80;
+        List<byte> currentFishes = initialPopulation.Select(x => Convert.ToByte(x)).ToList();
+        List<byte> newFishes = new();
+        int targetDay = 256;
 
-        // int inInterval = 0;
         int lastCount = 0;
 
         while (currentFishes.Count() > lastCount)
         {
             lastCount = currentFishes.Count();
-            for (int fish = 0; fish < currentFishes.Count(); fish++)
+            for (int fish = 0; fish < lastCount; fish++)
             {
                 if (currentFishes[fish] + 9 <= targetDay + 8)
                 {
-                    newFishes.Add(currentFishes[fish] + 9);
+                    currentFishes.Add((byte)(currentFishes[fish] + 9));
                     currentFishes[fish] += 7;
                 }
             }
-            currentFishes.AddRange(newFishes);
-            newFishes = new();
-            var min = currentFishes.Min();
-            // inInterval = currentFishes.Count(x => x < targetDay);
-            var max = currentFishes.Max();
+            System.Console.WriteLine(lastCount);
         }
 
         System.Console.WriteLine($"Fish count {currentFishes.Count()}");
