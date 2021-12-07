@@ -12,7 +12,7 @@ public class Aoc2021_Day06 : BaseDay
         {
             nextDay = GetNextPopulation(nextDay);
             // System.Console.WriteLine($"Day {day}: " + string.Join(",", nextDay.ToArray()) + $". Count {nextDay.Count()}");
-            System.Console.WriteLine($"Day {day}: " + $". Count {nextDay.Count()}");
+            // System.Console.WriteLine($"Day {day}: " + $". Count {nextDay.Count()}");
         }
 
         System.Console.WriteLine($"Fish count: {nextDay.Count()}");
@@ -46,21 +46,27 @@ public class Aoc2021_Day06 : BaseDay
         List<int> newFishes = new();
         int targetDay = 80;
 
-        int inInterval = 0;
-        while ((currentFishes.Min() <= targetDay) &&
-        !(currentFishes.Max() >= targetDay))
+        // int inInterval = 0;
+        int lastCount = 0;
+
+        while (currentFishes.Count() > lastCount)
         {
+            lastCount = currentFishes.Count();
             for (int fish = 0; fish < currentFishes.Count(); fish++)
             {
-                newFishes.Add(currentFishes[fish] + 9);
-                currentFishes[fish] += 7;
+                if (currentFishes[fish] + 9 <= targetDay + 8)
+                {
+                    newFishes.Add(currentFishes[fish] + 9);
+                    currentFishes[fish] += 7;
+                }
             }
             currentFishes.AddRange(newFishes);
             newFishes = new();
             var min = currentFishes.Min();
-            inInterval = currentFishes.Count(x => x < targetDay);
+            // inInterval = currentFishes.Count(x => x < targetDay);
             var max = currentFishes.Max();
         }
-        System.Console.WriteLine($"Fish count {currentFishes.Count() + inInterval}");
+
+        System.Console.WriteLine($"Fish count {currentFishes.Count()}");
     }
 }
