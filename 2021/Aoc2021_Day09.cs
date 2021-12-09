@@ -32,25 +32,6 @@ public class Aoc2021_Day09 : BaseDay
         System.Console.WriteLine($"Risk level is {sum}");
     }
 
-    // private List<(int, int)> CheckPositions((int row, int col) position, (int, int) arrDim)
-    // {
-    //     var pos = new List<(int, int)>();
-
-    //     // Point to the right
-    //     if (position.col < arrDim.Item2 - 1)
-    //         pos.Add((position.row, position.col + 1));
-    //     // Point above
-    //     if (position.row > 0)
-    //         pos.Add((position.row - 1, position.col));
-    //     // Point to the left
-    //     if (position.col > 1)
-    //         pos.Add((position.row, position.col - 1));
-    //     // Point below
-    //     if (position.row < arrDim.Item1 - 1)
-    //         pos.Add((position.row, position.col + 1));
-    //     return pos;
-    // }
-
     private int[,] InputTo2dArray(string[] test)
     {
         var inputArray = new int[test.Count(), test[0].Length];
@@ -67,6 +48,49 @@ public class Aoc2021_Day09 : BaseDay
 
     public override void RunB()
     {
+        List<HashSet<(int, int)>> basins = new List<HashSet<(int, int)>>();
 
+        foreach (var p in LowPoints)
+        {
+            var basin = new HashSet<(int, int)>() { p };
+
+            var coordsToCheck = new List<(int, int)>() { p };
+            var alreadyChecked = new List<(int, int)>() { };
+            while (coordsToCheck.Any())
+            {
+                var nextCoordsToCheck = new List<(int, int)>();
+                foreach (var c in coordsToCheck)
+                {
+                    if (!alreadyChecked.Contains(c))
+                    {
+                        alreadyChecked.Add(c);
+                        if (c.Item2 > 0 && inputArray[c.Item1, c.Item2 - 1] != 9)
+                        {
+                            nextCoordsToCheck.Add((c.Item1, c.Item2 - 1));
+                            basin.Add((c.Item1, c.Item2 - 1));
+                        }
+                        if (c.Item2 < Input[0].Length - 1 && inputArray[c.Item1, c.Item2 + 1] != 9)
+                        {
+                            nextCoordsToCheck.Add((c.Item1, c.Item2 + 1));
+                            basin.Add((c.Item1, c.Item2 + 1));
+                        }
+                        if (c.Item1 > 0 && inputArray[c.Item1 - 1, c.Item2] != 9)
+                        {
+                            nextCoordsToCheck.Add((c.Item1 - 1, c.Item2));
+                            basin.Add((c.Item1 - 1, c.Item2));
+                        }
+                        if (c.Item1 < Input.Count() - 1 && inputArray[c.Item1 + 1, c.Item2] != 9)
+                        {
+                            nextCoordsToCheck.Add((c.Item1 + 1, c.Item2));
+                            basin.Add((c.Item1 + 1, c.Item2));
+                        }
+                    }
+                }
+                coordsToCheck = nextCoordsToCheck;
+            }
+            basins.Add(basin);
+        }
+        var score = basins.Select(x => x.Count()).OrderByDescending(x => x).Take(3).Aggregate((b1, b2) => b1 * b2);
+        System.Console.WriteLine($"Score is {score}");
     }
 }
