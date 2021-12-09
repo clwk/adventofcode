@@ -5,12 +5,13 @@ public class Aoc2021_Day09 : BaseDay
     public Aoc2021_Day09(string inputFileName) : base(inputFileName)
     { }
 
-    private List<(int, int)> LowPoints => new();
+    private List<(int, int)> LowPoints { get; set; } = new();
+    private int[,] inputArray;
 
     public override void RunA()
     {
         var test = Input.ToArray();//.Select(x => x.Split)
-        var inputArray = InputTo2dArray(test);
+        inputArray = InputTo2dArray(test);
 
         for (int i = 0; i < test.Count(); i++)
         {
