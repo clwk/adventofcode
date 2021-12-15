@@ -1,13 +1,13 @@
+using System.Diagnostics;
+
 public class Aoc2021_Day14 : BaseDay
 {
     private List<string> Template { get; }
     private Dictionary<string, string> Rules { get; }
+    private Dictionary<string, string> Rules2 { get; set; } = new();
     public Aoc2021_Day14(string inputFileName) : base(inputFileName)
     {
-        // Template = Input[0].ToCharArray().ToList();
         Template = Input[0].ToCharArray().Select(x => x.ToString()).ToList();
-        // var rules=Input.Skip(2).Select(x=>x.Split(" -> ")).ToLookup()
-        // var rules2= Input.Skip(2).ToLookup(x => x.Split(" -> ")[0], x => x.Split(" -> ")[1]);
         Rules = Input.Skip(2).ToDictionary(x => x.Split(" -> ")[0], x => x.Split(" -> ")[1]);
     }
 
@@ -21,7 +21,7 @@ public class Aoc2021_Day14 : BaseDay
     {
         var listan = new LinkedList<string>(Template);
         var frequencies = new Dictionary<string, int>();
-        
+
         for (int step = 1; step <= steps; step++)
         {
             var currentNode = listan.First;
@@ -32,6 +32,7 @@ public class Aoc2021_Day14 : BaseDay
                 listan.AddAfter(currentNode, new LinkedListNode<string>(insert));
                 currentNode = currentNode.Next.Next;
             }
+            Debug.WriteLine($"Finished step {step}");
         }
 
 
@@ -47,6 +48,7 @@ public class Aoc2021_Day14 : BaseDay
 
     public override void RunB()
     {
-
+        int diff = RunPolymerization(20);
+        System.Console.WriteLine($"Difference most common - least common is {diff}.");
     }
 }
