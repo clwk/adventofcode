@@ -111,6 +111,8 @@ public class Graph<T>
         int[] distances = new int[Nodes.Count];
         Fill(distances, int.MaxValue); 
         distances[source.Index] = 0;
+        // Can be replaced with PriorityQueue ?
+        // https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.priorityqueue-2
         SimplePriorityQueue<Node<T>> nodes =
         new SimplePriorityQueue<Node<T>>();
         for (int i = 0; i < Nodes.Count; i++)
