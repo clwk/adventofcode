@@ -4,7 +4,9 @@ public class Aoc2021_Day17 : BaseDay
     { }
 
     // target area: x=102..157, y=-146..-90
+    // (int x, int y) TargetMin => (20, -10);
     (int x, int y) TargetMin => (102, -146);
+    // (int x, int y) TargetMax => (30, -5);
     (int x, int y) TargetMax => (157, -90);
     int MaxStep => 400;
 
@@ -43,6 +45,7 @@ public class Aoc2021_Day17 : BaseDay
             speed = GetNextSpeed(speed);
             step++;
         }
+        if (step < MaxStep) System.Console.WriteLine($"Speed {startSpeed.x}, {startSpeed.y}");
         return step >= MaxStep ? -int.MaxValue : maxY;
     }
 
@@ -58,6 +61,19 @@ public class Aoc2021_Day17 : BaseDay
 
     public override void RunB()
     {
+        int nrOfVelocities = 0;
+        for (int x = 1; x <= TargetMax.x; x++)
+        {
+            for (int y = TargetMin.y; y <= 1000; y++)
+            {
+                var currentMaxY = FindMaxYPos((x, y));
+                if (currentMaxY > -int.MaxValue)
+                {
+                    nrOfVelocities++;
+                }
+            }
+        }
 
+        System.Console.WriteLine($"Nr of  {nrOfVelocities}");
     }
 }
