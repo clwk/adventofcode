@@ -7,6 +7,10 @@ public class Aoc2021_Day18 : BaseDay
 
     public override void RunA()
     {
+        var toExplode = Grammar.MetaPair.Parse("[[[[[9,8],1],2],3],4]");
+
+        PairOrVal result = ExplodeOrSplit(toExplode);
+
         List<PairOrVal> snailfishNumbers = new();
         foreach (var expr in Input)
         {
@@ -14,6 +18,24 @@ public class Aoc2021_Day18 : BaseDay
             snailfishNumbers.Add(parsed);
             System.Console.WriteLine(parsed.ToString());
         }
+    }
+
+    private PairOrVal ExplodeOrSplit(PairOrVal toExplode)
+    {
+        // PairOrVal tempPair;
+        // if (toExplode.NestingLevel>4)
+        // tempPair=Explode(tempPair);
+        throw new NotImplementedException();
+    }
+
+    private PairOrVal Explode(PairOrVal pair)
+    {
+
+        while (!pair.IsValue)
+        {
+
+        }
+        throw new NotImplementedException();
     }
 
     public override void RunB()
@@ -28,18 +50,27 @@ public class PairOrVal
     public bool IsValue => Value.HasValue;
     public (PairOrVal n1, PairOrVal n2) Pair { get; set; }
     public int? Value { get; set; }
-    public (PairOrVal, PairOrVal) AddInner()
-    {
-        Pair = (new PairOrVal(), new PairOrVal());
-        return Pair;
-    }
-    public PairOrVal()
-    {
+    public PairOrVal Parent { get; set; }
 
+    public int NestingLevel
+    {
+        get
+        {
+            if (IsValue)
+                return 0;
+            else
+            {
+                var nestingBelow = new List<int?>() { Pair.n1?.NestingLevel, Pair.n2?.NestingLevel };
+                return (nestingBelow.Max(x => x.GetValueOrDefault()) + 1);
+            }
+        }
     }
+
     public PairOrVal((PairOrVal n1, PairOrVal n2) pair)
     {
         Pair = pair;
+        Pair.n1.Parent = this;
+        Pair.n2.Parent = this;
     }
 
     public PairOrVal(PairOrVal n)
@@ -47,6 +78,7 @@ public class PairOrVal
         if (!n.IsValue)
         {
             Pair = n.Pair;
+            
         }
         else
         {
@@ -78,7 +110,7 @@ static class Grammar
     private static readonly Parser<char> LBracket = Parse.Char('[');
     private static readonly Parser<char> RBracket = Parse.Char(']');
     private static readonly Parser<char> Comma = Parse.Char(',');
-    
+
     public static readonly Parser<PairOrVal> Pair =
         from lbr in LBracket
         from ldigit in Parse.Digit.Once().Text()
