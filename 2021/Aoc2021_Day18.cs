@@ -22,20 +22,86 @@ public class Aoc2021_Day18 : BaseDay
 
     private PairOrVal ExplodeOrSplit(PairOrVal toExplode)
     {
-        // PairOrVal tempPair;
-        // if (toExplode.NestingLevel>4)
-        // tempPair=Explode(tempPair);
+        PairOrVal tempPair;
+        if (toExplode.NestingLevel > 4)
+            tempPair = Explode(toExplode);
         throw new NotImplementedException();
     }
 
-    private PairOrVal Explode(PairOrVal pair)
+    private PairOrVal Explode(PairOrVal pairTree)
     {
+        var pair = pairTree;
 
-        while (!pair.IsValue)
+        while (pair.NestingLevel > 1)
         {
-
+            pair = pair.Pair.n1.NestingLevel > pair.Pair.n2.NestingLevel ? pair.Pair.n1 : pair.Pair.n2;
         }
-        throw new NotImplementedException();
+
+        // explode left
+        var pairForRight = pair;
+        // No return neeeded?
+        var tempPair = ExplodeLeft(pair);
+        ExplodeRight(pair);
+        pair = new PairOrVal(0);
+
+        // return needed?
+        return pair;
+    }
+
+    private void ExplodeRight(PairOrVal pair)
+    {
+        // TODO
+        var pairForRight = pair;
+        // pair is to the left
+        if (pairForRight.IsLeftPair.HasValue && pairForRight.IsLeftPair.Value)
+        {
+            pairForRight.Parent.Pair.n2.Value += pairForRight.Pair.n2.Value;
+        }
+        // pairForRight is to the right
+        else
+        {
+            while (pairForRight.Parent != null)
+            {
+                if (pairForRight.Parent.IsLeftPair.HasValue && pairForRight.Parent.IsLeftPair.Value)
+                {
+                    // correct? sure it's a value?
+                    pairForRight.Parent.Pair.n2.Value += pairForRight.Pair.n2.Value;
+                }
+                else
+                {
+                    pairForRight = pairForRight.Parent;
+                }
+            }
+        }
+    }
+
+    private static PairOrVal ExplodeLeft(PairOrVal pair)
+    {
+        var pairForLeft = pair;
+        // pair is to the right
+        if (pairForLeft.IsLeftPair.HasValue && !pairForLeft.IsLeftPair.Value)
+        {
+            pairForLeft.Parent.Pair.n1.Value += pairForLeft.Pair.n1.Value;
+        }
+        // pairForLeft is to the left
+        else
+        {
+            while (pairForLeft.Parent != null)
+            {
+                if (pairForLeft.Parent.IsLeftPair.HasValue && !pairForLeft.Parent.IsLeftPair.Value)
+                {
+                    // correct? sure it's a value?
+                    pairForLeft.Parent.Pair.n1.Value += pairForLeft.Pair.n1.Value;
+                }
+                else
+                {
+                    pairForLeft = pairForLeft.Parent;
+                }
+            }
+            // if (pair.Parent)
+        }
+
+        return pairForLeft;
     }
 
     public override void RunB()
@@ -48,6 +114,7 @@ public class PairOrVal
 {
     public bool IsDefined => Value != null || Pair.n1 != null || Pair.n2 != null;
     public bool IsValue => Value.HasValue;
+    public bool? IsLeftPair { get; set; }
     public (PairOrVal n1, PairOrVal n2) Pair { get; set; }
     public int? Value { get; set; }
     public PairOrVal Parent { get; set; }
@@ -70,7 +137,9 @@ public class PairOrVal
     {
         Pair = pair;
         Pair.n1.Parent = this;
+        Pair.n1.IsLeftPair = true;
         Pair.n2.Parent = this;
+        Pair.n2.IsLeftPair = false;
     }
 
     public PairOrVal(PairOrVal n)
@@ -78,7 +147,10 @@ public class PairOrVal
         if (!n.IsValue)
         {
             Pair = n.Pair;
-            
+            Pair.n1.Parent = this;
+            Pair.n1.IsLeftPair = true;
+            Pair.n2.Parent = this;
+            Pair.n2.IsLeftPair = false;
         }
         else
         {
