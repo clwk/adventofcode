@@ -30,22 +30,22 @@ public class Aoc2021_Day18 : BaseDay
 
     private PairOrVal Explode(PairOrVal pairTree)
     {
-        var pair = pairTree;
-
-        while (pair.NestingLevel > 1)
+        while (pairTree.NestingLevel > 1)
         {
-            pair = pair.Pair.n1.NestingLevel > pair.Pair.n2.NestingLevel ? pair.Pair.n1 : pair.Pair.n2;
+            pairTree = pairTree.Pair.n1.NestingLevel > pairTree.Pair.n2.NestingLevel ? pairTree.Pair.n1 : pairTree.Pair.n2;
         }
 
         // explode left
-        var pairForRight = pair;
+        var pairForRight = pairTree;
         // No return neeeded?
-        var tempPair = ExplodeLeft(pair);
-        ExplodeRight(pair);
-        pair = new PairOrVal(0);
+        var tempPair = ExplodeLeft(pairTree);
+        ExplodeRight(pairTree);
+        // pairTree = new PairOrVal(0);
+        pairTree.Pair = (null, null);
+        pairTree.Value = 0;
 
         // return needed?
-        return pair;
+        return pairTree;
     }
 
     private void ExplodeRight(PairOrVal pair)
