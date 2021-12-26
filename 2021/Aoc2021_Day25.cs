@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Text;
+
 public class Aoc2021_Day25 : BaseDay
 {
     protected int DimRow { get; }
@@ -32,11 +35,11 @@ public class Aoc2021_Day25 : BaseDay
 
     private char[,] InputTo2dArray()
     {
-        var inputArray = new char[Input.Count(), Input[0].Length];
-        for (int i = 0; i < Input.Count(); i++)
+        var inputArray = new char[DimRow, DimCol];
+        for (int i = 0; i < DimRow; i++)
         {
             var row = Input[i];
-            for (int j = 0; j < Input[0].Length; j++)
+            for (int j = 0; j < DimCol; j++)
             {
                 inputArray[i, j] = row[j];
             }
@@ -46,13 +49,14 @@ public class Aoc2021_Day25 : BaseDay
 
     private void PrintArr(char[,] nextStepArr)
     {
-        for (int row = 0; row < Input.Count; row++)
+        for (int row = 0; row < DimRow; row++)
         {
-            for (int col = 0; col < Input[0].Count(); col++)
+            StringBuilder sb = new StringBuilder();
+            for (int col = 0; col < DimCol; col++)
             {
-                System.Console.Write(nextStepArr[row, col]);
+                sb.Append(nextStepArr[row, col]);
             }
-            System.Console.Write(Environment.NewLine);
+            Debug.WriteLine(sb.ToString());
         }
     }
 
@@ -60,9 +64,9 @@ public class Aoc2021_Day25 : BaseDay
     {
         var nextStepArr = new char[DimRow, DimCol];
 
-        for (int row = 0; row < Input.Count; row++)
+        for (int row = 0; row < DimRow; row++)
         {
-            for (int col = 0; col < Input[0].Length; col++)
+            for (int col = 0; col < DimCol; col++)
             {
                 var nextPos = GetNextPosRight(row, col);
 
@@ -86,9 +90,9 @@ public class Aoc2021_Day25 : BaseDay
     {
         var nextStepArr = new char[DimRow, DimCol];
 
-        for (int row = 0; row < Input.Count(); row++)
+        for (int row = 0; row < DimRow; row++)
         {
-            for (int col = 0; col < Input[0].Length; col++)
+            for (int col = 0; col < DimCol; col++)
             {
                 var nextPos = GetNextPosDown(row, col);
 
