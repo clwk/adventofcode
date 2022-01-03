@@ -8,29 +8,42 @@ public class Aoc2021_Day20 : BaseDay
     private int EnhanceNr { get; set; } = 0;
     private string ImageEnhancement { get; set; }
 
+    private List<string> ImageInput { get; set; } = new List<string>();
     private List<string> ImagePadded { get; set; } = new List<string>();
 
     public Aoc2021_Day20(string inputFileName) : base(inputFileName)
-    { }
+    {
+        ImageEnhancement = Input[0];
+        ImageInput = Input.Skip(2).ToList();
+    }
 
     public override void RunA()
     {
-        ImageEnhancement = Input[0];
-        var imageInput = Input.Skip(2).ToList();
-
-        List<string> imageEnhanced = EnhanceImage(imageInput);
-        List<string> imageEnhanced2 = EnhanceImage(imageEnhanced);
-
-        var lightPixelCount1 = String.Join("", imageEnhanced).Count(x => x == LightPixel);
-        var lightPixelCount2 = String.Join("", imageEnhanced2).Count(x => x == LightPixel);
-        System.Console.WriteLine($"Number of lit pixels is {lightPixelCount1} after 1 enhancement");
-        System.Console.WriteLine($"Number of lit pixels is {lightPixelCount2} after 2 enhancements");
+        EnhanceXTimes(2);
     }
 
-    private List<string> EnhanceImage(List<string> imageInput)
+    public override void RunB()
+    {
+        EnhanceXTimes(50);
+    }
+
+    private void EnhanceXTimes(int times)
+    {
+        List<string> imageEnhanced = EnhanceImageOnce(ImageInput);
+
+        for (int i = 2; i <= times; i++)
+        {
+            imageEnhanced = EnhanceImageOnce(imageEnhanced);
+
+            var lightPixelCount1 = String.Join("", imageEnhanced).Count(x => x == LightPixel);
+            System.Console.WriteLine($"Number of lit pixels is {lightPixelCount1} after {i} enhancement");
+        }
+    }
+
+    private List<string> EnhanceImageOnce(List<string> ImageInput)
     {
         EnhanceNr++;
-        var paddedImage = PadImage(PadImage(PadImage(imageInput)));
+        var paddedImage = PadImage(PadImage(PadImage(ImageInput)));
 
         var nrRows = paddedImage.Count;
         var nrCols = paddedImage[0].Length;
@@ -87,8 +100,4 @@ public class Aoc2021_Day20 : BaseDay
         return decimalValue;
     }
 
-    public override void RunB()
-    {
-
-    }
 }
