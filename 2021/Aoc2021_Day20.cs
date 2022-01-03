@@ -4,14 +4,14 @@ public class Aoc2021_Day20 : BaseDay
 {
     private char DarkPixel => '.';
     private char LightPixel => '#';
+
+    private int EnhanceNr { get; set; } = 0;
     private string ImageEnhancement { get; set; }
 
     private List<string> ImagePadded { get; set; } = new List<string>();
 
     public Aoc2021_Day20(string inputFileName) : base(inputFileName)
-    {
-
-    }
+    { }
 
     public override void RunA()
     {
@@ -20,14 +20,17 @@ public class Aoc2021_Day20 : BaseDay
 
         List<string> imageEnhanced = EnhanceImage(imageInput);
         List<string> imageEnhanced2 = EnhanceImage(imageEnhanced);
-        
-        var lightPixelCount = String.Join("", imageEnhanced).Count(x => x == '#');
-        imageEnhanced.ToList();
+
+        var lightPixelCount1 = String.Join("", imageEnhanced).Count(x => x == LightPixel);
+        var lightPixelCount2 = String.Join("", imageEnhanced2).Count(x => x == LightPixel);
+        System.Console.WriteLine($"Number of lit pixels is {lightPixelCount1} after 1 enhancement");
+        System.Console.WriteLine($"Number of lit pixels is {lightPixelCount2} after 2 enhancements");
     }
 
     private List<string> EnhanceImage(List<string> imageInput)
     {
-        var paddedImage = PadImage(imageInput);
+        EnhanceNr++;
+        var paddedImage = PadImage(PadImage(PadImage(imageInput)));
 
         var nrRows = paddedImage.Count;
         var nrCols = paddedImage[0].Length;
@@ -35,45 +38,42 @@ public class Aoc2021_Day20 : BaseDay
         int pixelVal = 0;
         List<string> imageEnhanced = new List<string>();
 
-        imageEnhanced.Add(GetPadLine(imageInput));
-        for (int row = 1; row < nrRows - 2; row++)
+        for (int row = 1; row < nrRows - 1; row++)
         {
             var rowBuilder = new StringBuilder();
-            rowBuilder.Append(DarkPixel);
-            for (int col = 1; col < nrRows - 2; col++)
+            for (int col = 1; col < nrCols - 1; col++)
             {
                 pixelVal = GetPixelValue(paddedImage, row, col);
                 var pixel = ImageEnhancement[pixelVal];
                 rowBuilder.Append(pixel);
-                if (row == 3 && col == 3)
-                    System.Console.WriteLine($"Bernt {pixel}");
             }
-            rowBuilder.Append(DarkPixel);
             imageEnhanced.Add(rowBuilder.ToString());
         }
-        imageEnhanced.Add(GetPadLine(imageInput));
         return imageEnhanced;
     }
 
     private List<string> PadImage(List<string> imageToPad)
     {
+        char padChar = DarkPixel;
+        if (ImageEnhancement[0] == '#' && EnhanceNr % 2 == 0)
+            padChar = LightPixel;
         var paddedImage = new List<string>();
-        string padLine = GetPadLine(imageToPad);
+        string padLine = GetPadLine(imageToPad[0].Length + 2);
 
         paddedImage.Add(padLine);
         foreach (var line in imageToPad)
         {
-            var paddedLine = DarkPixel + line + DarkPixel;
+            var paddedLine = padChar + line + padChar;
             paddedImage.Add(paddedLine);
         }
         paddedImage.Add(padLine);
 
         return paddedImage;
-    }
 
-    private string GetPadLine(List<string> imageToPad)
-    {
-        return new string(DarkPixel, imageToPad[0].Length + 2);
+        string GetPadLine(int length)
+        {
+            return new string(padChar, length);
+        }
     }
 
     private int GetPixelValue(List<string> imagePadded, int row, int col)
