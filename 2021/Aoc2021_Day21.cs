@@ -59,10 +59,6 @@ public class Aoc2021_Day21 : BaseDay
 
         while (gamesLeft > 0)
         {
-            var tempPlayer1Poses = new Dictionary<long, int>();
-            var tempPlayer1Scores = new Dictionary<long, int>();
-            var tempPlayer2Poses = new Dictionary<long, int>();
-            var tempPlayer2Scores = new Dictionary<long, int>();
             var tempMaxGameIndex = maxGameIndex;
 
             // index som identifierar ett spel ?
@@ -80,20 +76,19 @@ public class Aoc2021_Day21 : BaseDay
                             tempMaxGameIndex++;
                             tempIdx = tempMaxGameIndex;
                             Player2Scores.Add(tempIdx, Player2Scores[clonedIdx]);
+                            Player1Scores.Add(tempIdx, Player1Scores[clonedIdx]);
                             Player2LastPoses.Add(tempIdx, Player2LastPoses[clonedIdx]);
+                            Player1LastPoses.Add(tempIdx, Player1LastPoses[clonedIdx]);
                         }
 
-                        var newPos = (Player1LastPoses[gameIdx] + dice) % 10;
+                        var newPos = (Player1LastPoses[tempIdx] + dice) % 10;
                         var newScore = GetScore(newPos);
 
-                        tempPlayer1Poses[tempIdx] = newPos;
-                        tempPlayer1Scores[tempIdx] = GetScore(newPos);
+                        Player1LastPoses[tempIdx] = newPos;
+                        Player1Scores[tempIdx] += GetScore(newPos);
                     }
             }
             maxGameIndex = tempMaxGameIndex;
-            Player1Scores = tempPlayer1Scores;
-            Player1LastPoses = tempPlayer1Poses;
-            // Player2Scores = tempPlayer2Scores;
 
             for (long gameIdx = 1; gameIdx <= maxGameIndex; gameIdx++)
             {
@@ -108,39 +103,29 @@ public class Aoc2021_Day21 : BaseDay
                         {
                             tempMaxGameIndex++;
                             tempIdx = tempMaxGameIndex;
-                            Player1Scores.Add(tempIdx, Player2Scores[clonedIdx]);
+                            Player1Scores.Add(tempIdx, Player1Scores[clonedIdx]);
+                            Player2Scores.Add(tempIdx, Player2Scores[clonedIdx]);
                             Player1LastPoses.Add(tempIdx, Player1LastPoses[clonedIdx]);
+                            Player2LastPoses.Add(tempIdx, Player2LastPoses[clonedIdx]);
                         }
 
-                        var newPos = (Player2LastPoses[gameIdx] + dice) % 10;
+                        var newPos = (Player2LastPoses[tempIdx] + dice) % 10;
                         var newScore = GetScore(newPos);
 
-                        tempPlayer2Poses[tempIdx] = newPos;
-                        tempPlayer2Scores[tempIdx] = GetScore(newPos);
+                        Player2LastPoses[tempIdx] = newPos;
+                        Player2Scores[tempIdx] += GetScore(newPos);
                     }
             }
             maxGameIndex = tempMaxGameIndex;
 
-            // Player1LastPoses = tempPlayer1Poses;
-            // Player1Scores = tempPlayer1Scores;
-            Player2LastPoses = tempPlayer2Poses;
-            Player2Scores = tempPlayer2Scores;
-
-            var player1wins = Player1Scores.Count(x => x.Value > playToScore);
-            var player2wins = Player2Scores.Count(x => x.Value > playToScore);
+            var player1wins = Player1Scores.Count(x => x.Value >= playToScore);
+            var player2wins = Player2Scores.Count(x => x.Value >= playToScore);
+            var player1max = Player1Scores.Max(x => x.Value);
+            var playerwmax = Player2Scores.Max(x => x.Value);
             gamesLeft = maxGameIndex - player1wins - player2wins;
             Debug.WriteLine($"Player 1: {player1wins} Player 2: {player2wins} nr games: {gamesLeft}/{maxGameIndex}");
-            // Debug.WriteLine(Player2Scores.Take(10).Select(x => x.ToString()));
         }
 
-    }
-
-    public int GetDiceRollB(int lastPos)
-    {
-        LastDice += 1;
-        var diceResult = (LastDice + lastPos) % 10;
-        if (LastDice == 3) LastDice = 0;
-        return diceResult;
     }
 
     public int GetDiceRoll(int lastPos)
