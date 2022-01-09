@@ -13,12 +13,11 @@ public class Aoc2021_Day21 : BaseDay
     // Part B
     private long Player1Wins { get; set; } = 0;
     private long Player2Wins { get; set; } = 0;
-    // private List<(int, bool)> Player1LastPoses { get; set; }// = new();
-    private Dictionary<long, int> Player1LastPoses { get; set; }// = new();
-    private List<(int, bool)> Player2LastPoses { get; set; }// = new();// (int, bool)[3];
-    // private List<(int, bool)> Player1Scores { get; set; } = new();
-    private Dictionary<long, int> Player1Scores { get; set; } = new();
-    private List<(int, bool)> Player2Scores { get; set; } = new();
+    private Dictionary<long, int> Player1LastPoses { get; set; } = new();
+    private Dictionary<long, int> Player2LastPoses { get; set; } = new();// (int, bool)[3];
+    private Dictionary<long, int> Player1Scores { get; set; } = new();// { new KeyValuePair(1, 0) };
+    private Dictionary<long, int> Player2Scores { get; set; } = new();
+    private long maxGameIndex { get; set; } = 0;
 
     public Aoc2021_Day21(string inputFileName) : base(inputFileName)
     {
@@ -27,8 +26,10 @@ public class Aoc2021_Day21 : BaseDay
         Player1LastPos = Player1Start;
         Player2LastPos = Player2Start;
         Player1LastPoses.Add(1, Player1LastPos);
-        Player2LastPoses.Add(2, Player2LastPos);
-        Player2LastPoses = new List<(int, bool)>() { (Player2LastPos, false) };
+        Player2LastPoses.Add(1, Player2LastPos);
+        Player1Scores.Add(1, 0);
+        Player2Scores.Add(1, 0);
+        maxGameIndex = 1;
     }
 
     public override void RunA()
@@ -52,70 +53,84 @@ public class Aoc2021_Day21 : BaseDay
 
     public override void RunB()
     {
-        // Nåt med grafbibliotek ?
-
-        // trädstruktur?
-        // alt hur generera alla möjligheter?
-        // skapa ny tråd för varje delning?
-        // isf behöver skapa objekt
-
-        // bara spara alla olika resultat efter x kast?
-        // per spelare eller per kast?
-        // spela de 3 olika för varje spelare?
-
-        // Hur veta vilken spelare som fick 21 först i just den omgången?
         // Hur para ihop omgångar från spelare1/2 ?
-        long gameIndex = 0;
-        long lastGameIndex = 0;
-        Dictionary<long, int>
+        int playToScore = 21;
+        long gamesLeft = 1;
 
-        while (Player1Score < 1000 && Player2Score < 1000)
+        while (gamesLeft > 0)
         {
-            var tempPlayer1Poses = new List<(int, bool)>();
-            var tempPlayer1Scores = new List<(int, bool)>();
-            var tempPlayer2Poses = new List<(int, bool)>();
-            var tempPlayer2Scores = new List<(int, bool)>();
+            var tempPlayer1Poses = new Dictionary<long, int>();
+            var tempPlayer1Scores = new Dictionary<long, int>();
+            var tempPlayer2Poses = new Dictionary<long, int>();
+            var tempPlayer2Scores = new Dictionary<long, int>();
+            var tempMaxGameIndex = maxGameIndex;
 
             // index som identifierar ett spel ?
-            for (int pos2 = 0; pos2 < Player2LastPoses.Count; pos2++)
+            for (long gameIdx = 1; gameIdx <= maxGameIndex; gameIdx++)
             {
-                var pos1Idx = 0;
-
-                for (int dice = 1; dice <= 3; dice++)
-                {
-                    var newPos = (Player1LastPoses[pos1Idx].Item1 + dice) % 10;
-                    var newScore = GetScore(newPos);
-
-                    (int, bool) newPosT = (newPos, false);
-                    (int, bool) newScoreT = (newScore, false);
-
-                    if (newScore > 21)
+                // Fortsätt spela endast om ingen kommit upp i 21
+                if (Player1Scores[gameIdx] < playToScore && Player2Scores[gameIdx] < playToScore)
+                    for (int dice = 1; dice <= 3; dice++)
                     {
-                        newPosT.Item2 = true;
-                        newScoreT.Item2 = true;
+                        var tempIdx = gameIdx;
+                        var clonedIdx = tempIdx;
+                        // add new gameindex
+                        if (dice != 1)
+                        {
+                            tempMaxGameIndex++;
+                            tempIdx = tempMaxGameIndex;
+                            Player2Scores.Add(tempIdx, Player2Scores[clonedIdx]);
+                            Player2LastPoses.Add(tempIdx, Player2LastPoses[clonedIdx]);
+                        }
+
+                        var newPos = (Player1LastPoses[gameIdx] + dice) % 10;
+                        var newScore = GetScore(newPos);
+
+                        tempPlayer1Poses[tempIdx] = newPos;
+                        tempPlayer1Scores[tempIdx] = GetScore(newPos);
                     }
-                    tempPlayer1Poses.Add(newPos);
-                    tempPlayer1Scores.Add(GetScore(newPos));
-                }
-
-                pos1Idx++;
             }
-            Player1LastPos = GetDiceRollB(Player1LastPos);
-            Player1Score += GetScore(Player1LastPos);
-            if (Player1Score < 1000)
-            {
-                Player2LastPos = GetDiceRoll(Player2LastPos);
-                Player2Score += GetScore(Player2LastPos);
-            }
-
-            Player1LastPoses = tempPlayer1Poses;
+            maxGameIndex = tempMaxGameIndex;
             Player1Scores = tempPlayer1Scores;
+            Player1LastPoses = tempPlayer1Poses;
+            // Player2Scores = tempPlayer2Scores;
+
+            for (long gameIdx = 1; gameIdx <= maxGameIndex; gameIdx++)
+            {
+                // Fortsätt spela endast om ingen kommit upp i playToScore
+                if (Player1Scores[gameIdx] < playToScore && Player2Scores[gameIdx] < playToScore)
+                    for (int dice = 1; dice <= 3; dice++)
+                    {
+                        var tempIdx = gameIdx;
+                        var clonedIdx = tempIdx;
+                        // add new gameindex
+                        if (dice != 1)
+                        {
+                            tempMaxGameIndex++;
+                            tempIdx = tempMaxGameIndex;
+                            Player1Scores.Add(tempIdx, Player2Scores[clonedIdx]);
+                            Player1LastPoses.Add(tempIdx, Player1LastPoses[clonedIdx]);
+                        }
+
+                        var newPos = (Player2LastPoses[gameIdx] + dice) % 10;
+                        var newScore = GetScore(newPos);
+
+                        tempPlayer2Poses[tempIdx] = newPos;
+                        tempPlayer2Scores[tempIdx] = GetScore(newPos);
+                    }
+            }
+            maxGameIndex = tempMaxGameIndex;
+
+            // Player1LastPoses = tempPlayer1Poses;
+            // Player1Scores = tempPlayer1Scores;
             Player2LastPoses = tempPlayer2Poses;
             Player2Scores = tempPlayer2Scores;
 
-
-            Debug.WriteLine(Player1Scores.Take(10).Select(x => x.ToString()));
-            Debug.WriteLine(Player2Scores.Take(10).Select(x => x.ToString()));
+            var player1wins = Player1Scores.Count(x => x.Value > playToScore);
+            var player2wins = Player2Scores.Count(x => x.Value > playToScore);
+            gamesLeft = maxGameIndex - player1wins - player2wins;
+            Debug.WriteLine($"Player 1: {player1wins} Player 2: {player2wins} nr games: {gamesLeft}/{maxGameIndex}");
+            // Debug.WriteLine(Player2Scores.Take(10).Select(x => x.ToString()));
         }
 
     }
