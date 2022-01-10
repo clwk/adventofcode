@@ -14,10 +14,11 @@ public class Aoc2021_Day21 : BaseDay
     private long Player1Wins { get; set; } = 0;
     private long Player2Wins { get; set; } = 0;
     private Dictionary<long, int> Player1LastPoses { get; set; } = new();
-    private Dictionary<long, int> Player2LastPoses { get; set; } = new();// (int, bool)[3];
-    private Dictionary<long, int> Player1Scores { get; set; } = new();// { new KeyValuePair(1, 0) };
+    private Dictionary<long, int> Player2LastPoses { get; set; } = new();
+    private Dictionary<long, int> Player1Scores { get; set; } = new();
     private Dictionary<long, int> Player2Scores { get; set; } = new();
-    private long maxGameIndex { get; set; } = 0;
+    private long MaxGameIndex { get; set; } = 0;
+    private HashSet<long> FinishedGames { get; set; } = new();
 
     public Aoc2021_Day21(string inputFileName) : base(inputFileName)
     {
@@ -29,7 +30,7 @@ public class Aoc2021_Day21 : BaseDay
         Player2LastPoses.Add(1, Player2LastPos);
         Player1Scores.Add(1, 0);
         Player2Scores.Add(1, 0);
-        maxGameIndex = 1;
+        MaxGameIndex = 1;
     }
 
     public override void RunA()
@@ -57,74 +58,96 @@ public class Aoc2021_Day21 : BaseDay
         int playToScore = 21;
         long gamesLeft = 1;
 
-        while (gamesLeft > 0)
+        while (FinishedGames.Count < MaxGameIndex)
         {
-            var tempMaxGameIndex = maxGameIndex;
+            var tempMaxGameIndex = MaxGameIndex;
 
             // index som identifierar ett spel ?
-            for (long gameIdx = 1; gameIdx <= maxGameIndex; gameIdx++)
+            for (long gameIdx = 1; gameIdx <= MaxGameIndex; gameIdx++)
             {
                 // Fortsätt spela endast om ingen kommit upp i 21
                 if (Player1Scores[gameIdx] < playToScore && Player2Scores[gameIdx] < playToScore)
-                    for (int dice = 1; dice <= 3; dice++)
-                    {
-                        var tempIdx = gameIdx;
-                        var clonedIdx = tempIdx;
-                        // add new gameindex
-                        if (dice != 1)
-                        {
-                            tempMaxGameIndex++;
-                            tempIdx = tempMaxGameIndex;
-                            Player2Scores.Add(tempIdx, Player2Scores[clonedIdx]);
-                            Player1Scores.Add(tempIdx, Player1Scores[clonedIdx]);
-                            Player2LastPoses.Add(tempIdx, Player2LastPoses[clonedIdx]);
-                            Player1LastPoses.Add(tempIdx, Player1LastPoses[clonedIdx]);
-                        }
+                {
+                    for (int dice1 = 1; dice1 <= 3; dice1++)
+                        for (int dice2 = 1; dice2 <= 3; dice2++)
+                            for (int dice3 = 1; dice3 <= 3; dice3++)
+                            {
+                                var tempIdx = gameIdx;
+                                var clonedIdx = tempIdx;
+                                // add new gameindex
+                                if (!(dice1 == 1 && dice2 == 1 && dice3 == 1))
+                                {
+                                    tempMaxGameIndex++;
+                                    tempIdx = tempMaxGameIndex;
+                                    Player2Scores.Add(tempIdx, Player2Scores[clonedIdx]);
+                                    Player1Scores.Add(tempIdx, Player1Scores[clonedIdx]);
+                                    Player2LastPoses.Add(tempIdx, Player2LastPoses[clonedIdx]);
+                                    Player1LastPoses.Add(tempIdx, Player1LastPoses[clonedIdx]);
+                                }
 
-                        var newPos = (Player1LastPoses[tempIdx] + dice) % 10;
-                        var newScore = GetScore(newPos);
+                                var newPos = (Player1LastPoses[tempIdx] + dice1 + dice2 + dice3) % 10;
+                                var newScore = GetScore(newPos);
 
-                        Player1LastPoses[tempIdx] = newPos;
-                        Player1Scores[tempIdx] += GetScore(newPos);
-                    }
+                                Player1LastPoses[tempIdx] = newPos;
+                                Player1Scores[tempIdx] += GetScore(newPos);
+                            }
+                }
+                else
+                {
+                    FinishedGames.Add(gameIdx);
+                }
             }
-            maxGameIndex = tempMaxGameIndex;
+            MaxGameIndex = tempMaxGameIndex;
 
-            for (long gameIdx = 1; gameIdx <= maxGameIndex; gameIdx++)
+            for (long gameIdx = 1; gameIdx <= MaxGameIndex; gameIdx++)
             {
                 // Fortsätt spela endast om ingen kommit upp i playToScore
                 if (Player1Scores[gameIdx] < playToScore && Player2Scores[gameIdx] < playToScore)
-                    for (int dice = 1; dice <= 3; dice++)
-                    {
-                        var tempIdx = gameIdx;
-                        var clonedIdx = tempIdx;
-                        // add new gameindex
-                        if (dice != 1)
-                        {
-                            tempMaxGameIndex++;
-                            tempIdx = tempMaxGameIndex;
-                            Player1Scores.Add(tempIdx, Player1Scores[clonedIdx]);
-                            Player2Scores.Add(tempIdx, Player2Scores[clonedIdx]);
-                            Player1LastPoses.Add(tempIdx, Player1LastPoses[clonedIdx]);
-                            Player2LastPoses.Add(tempIdx, Player2LastPoses[clonedIdx]);
-                        }
+                {
+                    for (int dice1 = 1; dice1 <= 3; dice1++)
+                        for (int dice2 = 1; dice2 <= 3; dice2++)
+                            for (int dice3 = 1; dice3 <= 3; dice3++)
+                            {
+                                var tempIdx = gameIdx;
+                                var clonedIdx = tempIdx;
+                                // add new gameindex
+                                if (!(dice1 == 1 && dice2 == 1 && dice3 == 1))
+                                {
+                                    tempMaxGameIndex++;
+                                    tempIdx = tempMaxGameIndex;
+                                    Player1Scores.Add(tempIdx, Player1Scores[clonedIdx]);
+                                    Player2Scores.Add(tempIdx, Player2Scores[clonedIdx]);
+                                    Player1LastPoses.Add(tempIdx, Player1LastPoses[clonedIdx]);
+                                    Player2LastPoses.Add(tempIdx, Player2LastPoses[clonedIdx]);
+                                }
 
-                        var newPos = (Player2LastPoses[tempIdx] + dice) % 10;
-                        var newScore = GetScore(newPos);
+                                var newPos = (Player2LastPoses[tempIdx] + dice1 + dice2 + dice3) % 10;
+                                var newScore = GetScore(newPos);
 
-                        Player2LastPoses[tempIdx] = newPos;
-                        Player2Scores[tempIdx] += GetScore(newPos);
-                    }
+                                Player2LastPoses[tempIdx] = newPos;
+                                Player2Scores[tempIdx] += GetScore(newPos);
+                            }
+                }
+                else
+                {
+                    FinishedGames.Add(gameIdx);
+                }
             }
-            maxGameIndex = tempMaxGameIndex;
+            MaxGameIndex = tempMaxGameIndex;
 
-            var player1wins = Player1Scores.Count(x => x.Value >= playToScore);
-            var player2wins = Player2Scores.Count(x => x.Value >= playToScore);
-            var player1max = Player1Scores.Max(x => x.Value);
-            var playerwmax = Player2Scores.Max(x => x.Value);
-            gamesLeft = maxGameIndex - player1wins - player2wins;
-            Debug.WriteLine($"Player 1: {player1wins} Player 2: {player2wins} nr games: {gamesLeft}/{maxGameIndex}");
+            // var player1wins = Player1Scores.Count(x => x.Value >= playToScore);
+            // var player2wins = Player2Scores.Count(x => x.Value >= playToScore);
+            // var player1max = Player1Scores.Max(x => x.Value);
+            // var playerwmax = Player2Scores.Max(x => x.Value);
+            // gamesLeft = MaxGameIndex - player1wins - player2wins;
+            // Debug.WriteLine($"Player 1: {player1wins} Player 2: {player2wins} nr games: {gamesLeft}/{MaxGameIndex}");
+            Console.WriteLine($"Games finished: {FinishedGames.Count}/{MaxGameIndex}");
         }
+        var player1wins = Player1Scores.Count(x => x.Value >= playToScore);
+        var player2wins = Player2Scores.Count(x => x.Value >= playToScore);
+        var player1max = Player1Scores.Max(x => x.Value);
+        var playerwmax = Player2Scores.Max(x => x.Value);
+        Console.WriteLine($"Player 1: {player1wins} Player 2: {player2wins} nr games: {gamesLeft}/{MaxGameIndex}");
 
     }
 
