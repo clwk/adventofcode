@@ -62,35 +62,46 @@ public class Aoc2021_Day21 : BaseDay
         {
             var tempMaxGameIndex = MaxGameIndex;
 
-            // index som identifierar ett spel ?
             for (long gameIdx = 1; gameIdx <= MaxGameIndex; gameIdx++)
             {
                 // Fortsätt spela endast om ingen kommit upp i 21
                 if (Player1Scores[gameIdx] < playToScore && Player2Scores[gameIdx] < playToScore)
                 {
+                    var clonedIdx = gameIdx;
                     for (int dice1 = 1; dice1 <= 3; dice1++)
+                    {
+
+                        if (!(dice1 == 1))
+                        {
+                            tempMaxGameIndex++;
+                            CloneGame(tempMaxGameIndex, clonedIdx);
+                        }
                         for (int dice2 = 1; dice2 <= 3; dice2++)
+                        {
+                            if (!(dice1 == 1 && dice2 == 1))
+                            {
+                                tempMaxGameIndex++;
+                                CloneGame(tempMaxGameIndex, clonedIdx);
+                            }
                             for (int dice3 = 1; dice3 <= 3; dice3++)
                             {
-                                var tempIdx = gameIdx;
-                                var clonedIdx = tempIdx;
+                                // var tempIdx = gameIdx;
+                                // var clonedIdx = gameIdx;
                                 // add new gameindex
                                 if (!(dice1 == 1 && dice2 == 1 && dice3 == 1))
                                 {
                                     tempMaxGameIndex++;
-                                    tempIdx = tempMaxGameIndex;
-                                    Player2Scores.Add(tempIdx, Player2Scores[clonedIdx]);
-                                    Player1Scores.Add(tempIdx, Player1Scores[clonedIdx]);
-                                    Player2LastPoses.Add(tempIdx, Player2LastPoses[clonedIdx]);
-                                    Player1LastPoses.Add(tempIdx, Player1LastPoses[clonedIdx]);
+                                    CloneGame(tempMaxGameIndex, clonedIdx);
                                 }
 
-                                var newPos = (Player1LastPoses[tempIdx] + dice1 + dice2 + dice3) % 10;
+                                var newPos = (Player1LastPoses[tempMaxGameIndex] + dice1 + dice2 + dice3) % 10;
                                 var newScore = GetScore(newPos);
 
-                                Player1LastPoses[tempIdx] = newPos;
-                                Player1Scores[tempIdx] += GetScore(newPos);
+                                Player1LastPoses[tempMaxGameIndex] = newPos;
+                                Player1Scores[tempMaxGameIndex] += GetScore(newPos);
                             }
+                        }
+                    }
                 }
                 else
                 {
@@ -98,35 +109,44 @@ public class Aoc2021_Day21 : BaseDay
                 }
             }
             MaxGameIndex = tempMaxGameIndex;
+            System.Console.WriteLine($"Max game index {MaxGameIndex}");
 
             for (long gameIdx = 1; gameIdx <= MaxGameIndex; gameIdx++)
             {
                 // Fortsätt spela endast om ingen kommit upp i playToScore
                 if (Player1Scores[gameIdx] < playToScore && Player2Scores[gameIdx] < playToScore)
                 {
+                    var clonedIdx = gameIdx;
                     for (int dice1 = 1; dice1 <= 3; dice1++)
+                    {
+                        if (!(dice1 == 1))
+                        {
+                            tempMaxGameIndex++;
+                            CloneGame(tempMaxGameIndex, clonedIdx);
+                        }
                         for (int dice2 = 1; dice2 <= 3; dice2++)
+                        {
+                            if (!(dice1 == 1 && dice2 == 1))
+                            {
+                                tempMaxGameIndex++;
+                                CloneGame(tempMaxGameIndex, clonedIdx);
+                            }
                             for (int dice3 = 1; dice3 <= 3; dice3++)
                             {
-                                var tempIdx = gameIdx;
-                                var clonedIdx = tempIdx;
-                                // add new gameindex
                                 if (!(dice1 == 1 && dice2 == 1 && dice3 == 1))
                                 {
                                     tempMaxGameIndex++;
-                                    tempIdx = tempMaxGameIndex;
-                                    Player1Scores.Add(tempIdx, Player1Scores[clonedIdx]);
-                                    Player2Scores.Add(tempIdx, Player2Scores[clonedIdx]);
-                                    Player1LastPoses.Add(tempIdx, Player1LastPoses[clonedIdx]);
-                                    Player2LastPoses.Add(tempIdx, Player2LastPoses[clonedIdx]);
+                                    CloneGame(tempMaxGameIndex, clonedIdx);
                                 }
 
-                                var newPos = (Player2LastPoses[tempIdx] + dice1 + dice2 + dice3) % 10;
+                                var newPos = (Player2LastPoses[tempMaxGameIndex] + dice1 + dice2 + dice3) % 10;
                                 var newScore = GetScore(newPos);
 
-                                Player2LastPoses[tempIdx] = newPos;
-                                Player2Scores[tempIdx] += GetScore(newPos);
+                                Player2LastPoses[tempMaxGameIndex] = newPos;
+                                Player2Scores[tempMaxGameIndex] += GetScore(newPos);
                             }
+                        }
+                    }
                 }
                 else
                 {
@@ -135,12 +155,6 @@ public class Aoc2021_Day21 : BaseDay
             }
             MaxGameIndex = tempMaxGameIndex;
 
-            // var player1wins = Player1Scores.Count(x => x.Value >= playToScore);
-            // var player2wins = Player2Scores.Count(x => x.Value >= playToScore);
-            // var player1max = Player1Scores.Max(x => x.Value);
-            // var playerwmax = Player2Scores.Max(x => x.Value);
-            // gamesLeft = MaxGameIndex - player1wins - player2wins;
-            // Debug.WriteLine($"Player 1: {player1wins} Player 2: {player2wins} nr games: {gamesLeft}/{MaxGameIndex}");
             Console.WriteLine($"Games finished: {FinishedGames.Count}/{MaxGameIndex}");
         }
         var player1wins = Player1Scores.Count(x => x.Value >= playToScore);
@@ -149,6 +163,14 @@ public class Aoc2021_Day21 : BaseDay
         var playerwmax = Player2Scores.Max(x => x.Value);
         Console.WriteLine($"Player 1: {player1wins} Player 2: {player2wins} nr games: {gamesLeft}/{MaxGameIndex}");
 
+    }
+
+    private void CloneGame(long tempMaxGameIndex, long clonedIdx)
+    {
+        Player1Scores.Add(tempMaxGameIndex, Player1Scores[clonedIdx]);
+        Player2Scores.Add(tempMaxGameIndex, Player2Scores[clonedIdx]);
+        Player1LastPoses.Add(tempMaxGameIndex, Player1LastPoses[clonedIdx]);
+        Player2LastPoses.Add(tempMaxGameIndex, Player2LastPoses[clonedIdx]);
     }
 
     public int GetDiceRoll(int lastPos)
