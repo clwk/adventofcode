@@ -7,23 +7,10 @@ public class Aoc2022_Day01 : BaseDay
 
     public override void RunA()
     {
-        var caloriesByElf = new List<int>();
-        int caloriesSum = 0;
-        foreach (var line in Input)
-        {
-            if (string.IsNullOrEmpty(line))
-            {
-                caloriesByElf.Add(caloriesSum);
-                caloriesSum = 0;
-            }
-            else
-            {
-                caloriesSum += int.Parse(line);
-            }
-        }
-        ResultFromA = caloriesByElf;
-        System.Console.WriteLine($"Result from A {caloriesByElf.Max()}");
+        var inputGrouped = InputGrouped(InputAsString);
+        ResultFromA = ParseInt(inputGrouped).Select(x => x.Sum()).ToList();
 
+        System.Console.WriteLine($"Result from A {ResultFromA.Max()}");
     }
 
     public override void RunB()
@@ -31,4 +18,16 @@ public class Aoc2022_Day01 : BaseDay
         var resultFromB = ResultFromA.OrderByDescending(x => x).Take(3).Sum();
         System.Console.WriteLine($"Result from B {resultFromB}");
     }
+
+    private static List<List<int>> ParseInt(IEnumerable<IEnumerable<string>> inputGrouped) =>
+        inputGrouped
+            .Select(x => x.Select(int.Parse)
+                .ToList())
+            .ToList();
+
+    private static List<List<string>> InputGrouped(string input) =>
+        input
+            .Split("\n\n")
+            .Select(x => x.Split("\n")
+                .Where(y => !string.IsNullOrEmpty(y)).ToList()).ToList();
 }
