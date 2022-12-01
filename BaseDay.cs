@@ -1,7 +1,8 @@
 public abstract class BaseDay
 {
-    public string InputFileName { get; }
-    public List<string> Input => File.ReadAllLines(InputFileName).ToList();
+    private string InputFileName { get; }
+    protected List<string> Input => File.ReadAllLines(InputFileName).ToList();
+    protected string InputAsString => File.ReadAllText(InputFileName);
 
     protected BaseDay(string inputFileName)
     {
