@@ -5,19 +5,17 @@ public class Aoc2022_Day06 : BaseDay
 
     public override void RunA()
     {
-        var positions = Input.Select(x => GetMarkerPosition(x));
+        var positions = Input.Select(x => GetMarkerPosition(x, 4));
         foreach (var pos in positions)
         {
             System.Console.WriteLine($"Position {pos}");
         }
     }
 
-    private int GetMarkerPosition(string buffer)
+    private int GetMarkerPosition(string buffer, int markerLength)
     {
         int i = 0;
-        int markerLength = 4;
-        var test = buffer.Skip(i).Take(markerLength).Distinct();
-        while (buffer.Skip(i).Take(markerLength).Distinct().Count() != 4)
+        while (buffer.Skip(i).Take(markerLength).Distinct().Count() != markerLength)
         {
             i++;
         }
@@ -26,6 +24,7 @@ public class Aoc2022_Day06 : BaseDay
 
     public override void RunB()
     {
-
+        var position = GetMarkerPosition(Input.First(), 14);
+        Console.WriteLine($"Position {position}");
     }
 }
