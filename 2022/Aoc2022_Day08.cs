@@ -1,3 +1,5 @@
+using MoreLinq;
+
 public class Aoc2022_Day08 : BaseDay
 {
     public Aoc2022_Day08(string inputFileName) : base(inputFileName)
@@ -5,16 +7,13 @@ public class Aoc2022_Day08 : BaseDay
         _inputArray = Input.Select(x => x.Select(y => int.Parse(y.ToString())).ToArray()).ToArray();
     }
 
-    private int[][] _inputArray;
+    private readonly int[][] _inputArray;
 
     public override void RunA()
     {
-        // 4 directions to consider, stop when found
-        // var _inputArray = Input.Select(x => x.Select(y => int.Parse(y.ToString())).ToArray()).ToArray();
-
-        int nrOfVisibleTrees = 2 * (_inputArray.Length - 1) + 2 * (_inputArray[0].Length - 1);
-        for (int i = 1; i < _inputArray.Length - 1; i++)
-            for (int j = 1; j < _inputArray[0].Length - 1; j++)
+        var nrOfVisibleTrees = 2 * (_inputArray.Length - 1) + 2 * (_inputArray[0].Length - 1);
+        for (var i = 1; i < _inputArray.Length - 1; i++)
+            for (var j = 1; j < _inputArray[0].Length - 1; j++)
             {
                 var currentTree = _inputArray[i][j];
                 var right = CheckRight(i, j, _inputArray);
@@ -68,7 +67,16 @@ public class Aoc2022_Day08 : BaseDay
 
     public override void RunB()
     {
-        var testScre = GetScenicScore(1, 2, _inputArray);
+        List<int> scenicScores = new();
+
+        for (var i = 1; i < _inputArray.Length - 1; i++)
+            for (var j = 1; j < _inputArray[0].Length - 1; j++)
+            {
+                scenicScores.Add(GetScenicScore(i, j, _inputArray));
+            }
+
+        var maxScore = scenicScores.Max();
+        System.Console.WriteLine($"Max scenic score: {maxScore}");
     }
 
     private int GetScenicScore(int row, int col, int[][] treeArray)
@@ -83,7 +91,7 @@ public class Aoc2022_Day08 : BaseDay
     private int GetNrOfTreesRight(int row, int col, int[][] treeArray)
     {
         var currentTree = treeArray[row][col];
-        var enumerable = GetRow(row, treeArray).Skip(col + 1).TakeWhile(t => t < currentTree);
+        var enumerable = GetRow(row, treeArray).Skip(col + 1).TakeUntil(t => t >= currentTree);
         return enumerable.Count();
     }
 
@@ -91,22 +99,21 @@ public class Aoc2022_Day08 : BaseDay
     {
         var currentTree = treeArray[row][col];
         var reverse = GetRow(row, treeArray).Take(col).Reverse();
-        var enumerable = reverse.TakeWhile(t => t < currentTree);
-        // var enumerable = reverse.take(t => t < currentTree);
-        return enumerable.Count()+1;
+        var enumerable = reverse.TakeUntil(t => t >= currentTree);
+        return enumerable.Count();
     }
 
     private int GetNrOfTreesUp(int row, int col, int[][] treeArray)
     {
         var currentTree = treeArray[row][col];
-        var enumerable = GetColumn(col, treeArray).Take(row).Reverse().TakeWhile(t => t < currentTree);
+        var enumerable = GetColumn(col, treeArray).Take(row).Reverse().TakeUntil(t => t >= currentTree);
         return enumerable.Count();
     }
 
     private int GetNrOfTreesDown(int row, int col, int[][] treeArray)
     {
         var currentTree = treeArray[row][col];
-        var enumerable = GetColumn(col, treeArray).Skip(row + 1).TakeWhile(t => t < currentTree);
+        var enumerable = GetColumn(col, treeArray).Skip(row + 1).TakeUntil(t => t >= currentTree);
         return enumerable.Count();
     }
 }
