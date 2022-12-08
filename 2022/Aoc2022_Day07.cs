@@ -8,16 +8,26 @@ public class Aoc2022_Day07 : BaseDay
         FsNode rootNode = new FsNode("root", NodeType.Directory, 0);
         var currentNode = rootNode;
 
-        var lines = Input.GetRange(2, 11);
+        // var lines = Input.GetRange(2, 11);
 
         var skipNr = 2;
 
         var lines2 = Input.Skip(skipNr).TakeWhile(x => x[0] != '$').ToList();
-        rootNode.AddNewChildContents("adsf", lines);
+        rootNode.AddNewChildContents("adsf", lines2);
         skipNr += lines2.Count();
 
         var commandString = Input[skipNr];
-        var commandStrings = Input.Skip(skipNr).TakeWhile(l => l.Split(' ')[1] == @"$");
+        var commandStrings = Input.Skip(skipNr).TakeWhile(l => l.Split(' ')[1] == "cd");
+
+        foreach (var cdCommand in commandStrings)
+        {
+            var commandParts = cdCommand.Split(' ');
+            if (commandParts[2] == "..")
+                currentNode = currentNode.ParentNode;
+            else
+                currentNode = currentNode.ChildNodes.Single(n => n.Name == commandParts[2]);
+        }
+
         var dirName = commandString.Split(' ')[2];
         currentNode = currentNode.ChildNodes.Single(n => n.Name == dirName);
 
