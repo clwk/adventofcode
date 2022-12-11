@@ -33,6 +33,7 @@ public class Aoc2022_Day09 : BaseDay
                 _lastHeadPos = _headPos;
                 _lastTailPos = _tailPos;
                 MoveHead(MoveByDirection[line[0]]);
+                PrintMap();
                 MoveTail(GetTailRelativeMove());
                 _tailPositions.Add(_tailPos);
                 PrintMap();
@@ -48,7 +49,7 @@ public class Aoc2022_Day09 : BaseDay
         // var test = Math.mi
         for (int row = -5; row <= 10; row++)
         {
-            for (int col = -10; col <= 0; col++)
+            for (int col = -5; col <= 5; col++)
             {
                 if (_headPos == _tailPos && _headPos == (row, col))
                     System.Console.Write("X");
