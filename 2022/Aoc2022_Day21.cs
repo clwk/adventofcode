@@ -2,7 +2,7 @@ using System.Data;
 
 public class Aoc2022_Day21 : BaseDay
 {
-    private Dictionary<string, int> MonkeyVsNumber = new();
+    private Dictionary<string, long> MonkeyVsNumber = new();
     private Dictionary<string, (string, string, string)> Calculations = new();
 
     private HashSet<string> Unresolved = new();
@@ -19,8 +19,8 @@ public class Aoc2022_Day21 : BaseDay
         {
             var key = line.Split(": ")[0];
             var value = line.Split(": ")[1];
-            if (int.TryParse(value, out int intValue))
-                MonkeyVsNumber.Add(key, intValue);
+            if (long.TryParse(value, out long longValue))
+                MonkeyVsNumber.Add(key, longValue);
         }
     }
 
@@ -30,7 +30,7 @@ public class Aoc2022_Day21 : BaseDay
         {
             var key = line.Split(": ")[0];
             var value = line.Split(": ")[1];
-            if (!int.TryParse(value, out _))
+            if (!long.TryParse(value, out _))
             {
                 var expression = value.Split(" ");
                 Calculations.Add(key, (expression[0], expression[1], expression[2]));
@@ -43,12 +43,21 @@ public class Aoc2022_Day21 : BaseDay
 
     }
 
-    private int EvaluateExpression(string expression)
+    // private long EvaluateExpression(string expression)
+    // {
+    //     DataTable dt = new DataTable();
+    //     var v = dt.Compute(expression, "");
+    //     return long.Parse(v.ToString());
+    // }
+
+    private long EvaluateExpression(long term1, long term2, string opera) => opera switch
     {
-        DataTable dt = new DataTable();
-        var v = dt.Compute(expression, "");
-        return int.Parse(v.ToString());
-    }
+        "*" => term1 * term2,
+        "+" => term1 + term2,
+        "-" => term1 - term2,
+        "/" => term1 / term2,
+        _ => throw new InvalidOperationException()
+    };
 
     public override void RunA()
     {
@@ -56,14 +65,15 @@ public class Aoc2022_Day21 : BaseDay
         {
             foreach (var line in Calculations)
             {
-                if (MonkeyVsNumber.TryGetValue(line.Value.Item1, out int item1) &&
-                    MonkeyVsNumber.TryGetValue(line.Value.Item3, out int item3))
+                if (MonkeyVsNumber.TryGetValue(line.Value.Item1, out long item1) &&
+                    MonkeyVsNumber.TryGetValue(line.Value.Item3, out long item3))
                 {
-                    MonkeyVsNumber.Add(line.Key, EvaluateExpression(item1 + line.Value.Item2 + item3));
+                    MonkeyVsNumber.Add(line.Key, EvaluateExpression(item1, item3, line.Value.Item2));
                     Calculations.Remove(line.Key);
                 }
             }
         }
+        System.Console.WriteLine($"A: root yells {MonkeyVsNumber["root"]}");
     }
 
     public override void RunB()
