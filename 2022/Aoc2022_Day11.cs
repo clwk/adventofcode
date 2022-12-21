@@ -5,7 +5,8 @@ public class Aoc2022_Day11 : BaseDay
 
     public override void RunA()
     {
-
+        // for (int i=0;)
+        // Input.Skip
     }
 
     public override void RunB()
