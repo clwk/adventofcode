@@ -8,7 +8,7 @@ public class Aoc2022_Day15 : BaseDay
     private List<(int x, int y)> _sensors = new();
     private List<(int x, int y)> _beacons = new();
     private HashSet<int> NoBeaconCols = new();
-    private const int rowToCheck = 10;
+    private const int rowToCheck = 2000000;
 
     public override void RunA()
     {
@@ -17,8 +17,7 @@ public class Aoc2022_Day15 : BaseDay
             var searchDistance = GetDistance(_sensors[i], _beacons[i]);
             var sensorRow = _sensors[i].y;
             var sensorCol = _sensors[i].x;
-            // if (sensorRow >= rowToCheck)
-            // {
+
             var verticalDistance = Math.Abs(sensorRow - rowToCheck);
             if (searchDistance > verticalDistance)
             {
@@ -28,25 +27,9 @@ public class Aoc2022_Day15 : BaseDay
                     NoBeaconCols.Add(col);
                 }
             }
-            // }
-
-            // if (sensorRow < rowToCheck)
-            // {
-            //     var verticalDistance = sensorRow - rowToCheck;
-            //     if (searchDistance > verticalDistance)
-            //     {
-            //         var fillCols = searchDistance - verticalDistance;
-            //         for (int col = sensorCol - fillCols; col < sensorCol + fillCols; col++)
-            //         {
-            //             NoBeaconCols.Add(col);
-            //         }
-            //     }
-            // }
         }
         System.Console.WriteLine($"Number of cols: {NoBeaconCols.Count}");
     }
-
-    // private void CheckBeacon(int row, )
 
     private void ParseInput()
     {
