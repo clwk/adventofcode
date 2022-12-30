@@ -54,13 +54,23 @@ public class Aoc2022_Day15 : BaseDay
 
     public override void RunB()
     {
+        const int maxRow = 4000000;
+        // Find ranges to not check
+        // var initialRows = Enumerable.Range(0, maxRow);
+        // var allRowsNoCheck = GetAllRowsNoCheck();
+
+        // var rowsToCheck = initialRows.Except(allRowsNoCheck).ToList();
+
         (int x, int y) distressPos = (0, 0);
         int row = 0;
-        const int maxRow = 20;
+        var rowsToCheck = _sensors.Select(p => p.y);
+
         while (distressPos == (0, 0) && row <= maxRow)
         {
             var colsWithNoBeacon = GetNoBeaconCols(row);
-            var possibleCols = Enumerable.Range(1, 20).Except(colsWithNoBeacon);
+            // var colsSorted1 = colsWithNoBeacon.OrderByDescending(x => x);
+            // var colsSorted2 = colsWithNoBeacon.OrderBy(x => x);
+            var possibleCols = Enumerable.Range(1, maxRow).Except(colsWithNoBeacon);
             if (possibleCols.Count() == 1)
                 distressPos = (possibleCols.Single(), row);
             System.Console.WriteLine($"Row {row}, {possibleCols.Count()} possible beacons");
@@ -69,5 +79,23 @@ public class Aoc2022_Day15 : BaseDay
 
         var tuningFrequency = 4000000 * distressPos.x + distressPos.y;
         System.Console.WriteLine($"Tuning frequency {tuningFrequency}");
+    }
+
+    private HashSet<int> GetAllRowsNoCheck()
+    {
+        HashSet<int> allRowsNoCheck = new();
+        for (int i = 0; i < _sensors.Count; i++)
+        {
+            var rows = GetRowsNoCheck(_sensors[i], _beacons[i]);
+            foreach (var row in rows) allRowsNoCheck.Add(row);
+        }
+        return allRowsNoCheck;
+    }
+
+    private List<int> GetRowsNoCheck((int x, int y) sensor, (int x, int y) beacon)
+    {
+        var distance = GetDistance(sensor, beacon);
+        var noCheck = Enumerable.Range(sensor.y - distance, 2 * distance);
+        return noCheck.ToList();
     }
 }
