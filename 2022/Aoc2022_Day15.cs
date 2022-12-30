@@ -26,10 +26,12 @@ public class Aoc2022_Day15 : BaseDay
             var sensorCol = _sensors[i].x;
 
             var verticalDistance = Math.Abs(sensorRow - checkRow);
-            if (searchDistance > verticalDistance)
+            // if (searchDistance == verticalDistance)
+            // System.Console.WriteLine($"Same: {searchDistance}");
+            if (searchDistance >= verticalDistance)
             {
                 var fillCols = searchDistance - verticalDistance;
-                for (int col = sensorCol - fillCols; col < sensorCol + fillCols; col++)
+                for (int col = sensorCol - fillCols; col <= sensorCol + fillCols; col++)
                 {
                     noBeaconCols.Add(col);
                 }
@@ -52,6 +54,20 @@ public class Aoc2022_Day15 : BaseDay
 
     public override void RunB()
     {
-        // NoBeaconColsB.TryGetValue()
+        (int x, int y) distressPos = (0, 0);
+        int row = 0;
+        const int maxRow = 20;
+        while (distressPos == (0, 0) && row <= maxRow)
+        {
+            var colsWithNoBeacon = GetNoBeaconCols(row);
+            var possibleCols = Enumerable.Range(1, 20).Except(colsWithNoBeacon);
+            if (possibleCols.Count() == 1)
+                distressPos = (possibleCols.Single(), row);
+            System.Console.WriteLine($"Row {row}, {possibleCols.Count()} possible beacons");
+            row++;
+        }
+
+        var tuningFrequency = 4000000 * distressPos.x + distressPos.y;
+        System.Console.WriteLine($"Tuning frequency {tuningFrequency}");
     }
 }
