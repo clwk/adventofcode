@@ -28,15 +28,15 @@ public class Aoc2022_Day09 : BaseDay
         // Check tail and move
         foreach (var line in Input)
         {
-            for (int i = 0; i < int.Parse(line[2].ToString()); i++)
+            for (int i = 0; i < int.Parse(line.Split(' ')[1].ToString()); i++)
             {
                 _lastHeadPos = _headPos;
                 _lastTailPos = _tailPos;
                 MoveHead(MoveByDirection[line[0]]);
-                PrintMap();
+                // PrintMap();
                 MoveTail(GetTailRelativeMove());
                 _tailPositions.Add(_tailPos);
-                PrintMap();
+                // PrintMap();
             }
         }
         System.Console.WriteLine($"Min coord: {_tailPositions.MinBy(t => t.row)}. Max {_tailPositions.MaxBy(t => t.col)}");
