@@ -13,7 +13,9 @@ public class Aoc2022_Day15 : BaseDay
     public override void RunA()
     {
         var cols = GetNoBeaconCols(rowToCheck);
-        System.Console.WriteLine($"Number of cols: {cols.Count}");
+        var existingBeaconsAtRow = _beacons.Where(p => p.y == rowToCheck).Distinct().Select(p => p.x).ToList();
+        var noBeaconsDiff = cols.Except(existingBeaconsAtRow).ToList();
+        System.Console.WriteLine($"Number of cols: {noBeaconsDiff.Count()}");
     }
 
     private HashSet<int> GetNoBeaconCols(int checkRow)
@@ -27,11 +29,11 @@ public class Aoc2022_Day15 : BaseDay
 
             var verticalDistance = Math.Abs(sensorRow - checkRow);
             // if (searchDistance == verticalDistance)
-            // System.Console.WriteLine($"Same: {searchDistance}");
+            //     System.Console.WriteLine($"Same: {searchDistance}");
             if (searchDistance >= verticalDistance)
             {
                 var fillCols = searchDistance - verticalDistance;
-                for (int col = sensorCol - fillCols; col < sensorCol + fillCols; col++)
+                for (int col = sensorCol - fillCols; col <= sensorCol + fillCols; col++)
                 {
                     noBeaconCols.Add(col);
                 }
