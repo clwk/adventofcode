@@ -11,8 +11,8 @@ public class Aoc2022_Day15 : BaseDay
 
     public override void RunA()
     {
-        // const int rowToCheck = 2000000;
-        const int rowToCheck = 10;
+        const int rowToCheck = 2000000;
+        // const int rowToCheck = 10;
         var cols = GetNoBeaconCols(rowToCheck);
         var existingBeaconsAtRow = _beacons.Where(p => p.y == rowToCheck).Distinct().Select(p => p.x).ToList();
         var noBeaconsDiff = cols.Except(existingBeaconsAtRow).ToList();
@@ -57,29 +57,38 @@ public class Aoc2022_Day15 : BaseDay
 
     public override void RunB()
     {
-        // const int maxRow = 4000000;
-        const int maxRow = 20;
+        const int maxRow = 4000000;
+        // const int maxRow = 20;
         var intersections = GetIntersections();
-        var searchRows = Enumerable.Range(0, maxRow);
-        var possibleRows = searchRows.Except(intersections.Select(p => p.y));
+        // var searchRows = Enumerable.Range(0, maxRow);
+        // var possibleRows = searchRows.Except(intersections.Select(p => p.y));
 
-        var testSort = intersections.OrderBy(p => p.y).ToList();
-        var startAt = testSort.ElementAt(testSort.Count / 2);
+        var rowsToTest = new List<int>();
+        foreach (var intersection in intersections)
+        {
+            if (intersection.y > 0)
+            {
+                rowsToTest.Add(intersection.y - 2);
+                rowsToTest.Add(intersection.y - 1);
+                rowsToTest.Add(intersection.y);
+                rowsToTest.Add(intersection.y + 1);
+                rowsToTest.Add(intersection.y + 2);
+            }
+        }
+
+        rowsToTest = rowsToTest.Distinct().ToList();
 
         (int x, int y) distressPos = (0, 0);
-        int row = startAt.y;
-        while (distressPos == (0, 0) && row <= maxRow)
+
+        foreach (var row in rowsToTest)
         {
             var colsWithNoBeacon = GetNoBeaconCols(row);
-            //         // var colsSorted1 = colsWithNoBeacon.OrderByDescending(x => x);
-            //         // var colsSorted2 = colsWithNoBeacon.OrderBy(x => x);
             var existingBeaconsAtRow = _beacons.Where(p => p.y == row).Distinct().Select(p => p.x).ToList();
             var possibleCols = Enumerable.Range(1, maxRow).Except(colsWithNoBeacon).Except(existingBeaconsAtRow);
             if (possibleCols.Any()) System.Console.WriteLine($"Contains {possibleCols.Count()} possible");
             if (possibleCols.Count() == 1)
                 distressPos = (possibleCols.Single(), row);
             System.Console.WriteLine($"Row {row}, {possibleCols.Count()} possible beacons");
-            row++;
         }
 
         var tuningFrequency = 4000000 * distressPos.x + distressPos.y;
@@ -105,7 +114,10 @@ public class Aoc2022_Day15 : BaseDay
                 if (rhombus1 == rhombus2)
                     continue;
                 var intersection = rhombus1.Intersect(rhombus2).ToList();
-                intersections.AddRange(intersection);
+                if (intersection.Count > 4)
+                    System.Console.WriteLine($"Intersection count: {intersection.Count}");
+                else
+                    intersections.AddRange(intersection);
             }
         }
         var uniqueIntersections = intersections.Distinct().ToList();
