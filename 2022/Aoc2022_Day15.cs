@@ -29,8 +29,7 @@ public class Aoc2022_Day15 : BaseDay
             var sensorCol = _sensors[i].x;
 
             var verticalDistance = Math.Abs(sensorRow - checkRow);
-            // if (searchDistance == verticalDistance)
-            //     System.Console.WriteLine($"Same: {searchDistance}");
+
             if (searchDistance >= verticalDistance)
             {
                 var fillCols = searchDistance - verticalDistance;
@@ -60,8 +59,6 @@ public class Aoc2022_Day15 : BaseDay
         const int maxRow = 4000000;
         // const int maxRow = 20;
         var intersections = GetIntersections();
-        // var searchRows = Enumerable.Range(0, maxRow);
-        // var possibleRows = searchRows.Except(intersections.Select(p => p.y));
 
         var rowsToTest = new List<int>();
         foreach (var intersection in intersections)
@@ -85,13 +82,15 @@ public class Aoc2022_Day15 : BaseDay
             var colsWithNoBeacon = GetNoBeaconCols(row);
             var existingBeaconsAtRow = _beacons.Where(p => p.y == row).Distinct().Select(p => p.x).ToList();
             var possibleCols = Enumerable.Range(1, maxRow).Except(colsWithNoBeacon).Except(existingBeaconsAtRow);
-            if (possibleCols.Any()) System.Console.WriteLine($"Contains {possibleCols.Count()} possible");
             if (possibleCols.Count() == 1)
+            {
                 distressPos = (possibleCols.Single(), row);
+                break;
+            }
             System.Console.WriteLine($"Row {row}, {possibleCols.Count()} possible beacons");
         }
 
-        var tuningFrequency = 4000000 * distressPos.x + distressPos.y;
+        var tuningFrequency = 4000000 * (long)distressPos.x + (long)distressPos.y;
         System.Console.WriteLine($"Tuning frequency {tuningFrequency}");
     }
 
