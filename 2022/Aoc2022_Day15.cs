@@ -31,7 +31,7 @@ public class Aoc2022_Day15 : BaseDay
             if (searchDistance >= verticalDistance)
             {
                 var fillCols = searchDistance - verticalDistance;
-                for (int col = sensorCol - fillCols; col <= sensorCol + fillCols; col++)
+                for (int col = sensorCol - fillCols; col < sensorCol + fillCols; col++)
                 {
                     noBeaconCols.Add(col);
                 }
@@ -62,10 +62,12 @@ public class Aoc2022_Day15 : BaseDay
         // var rowsToCheck = initialRows.Except(allRowsNoCheck).ToList();
 
         (int x, int y) distressPos = (0, 0);
-        int row = 0;
+        // int row = 0;
         var rowsToCheck = _sensors.Select(p => p.y);
 
-        while (distressPos == (0, 0) && row <= maxRow)
+        // while (distressPos == (0, 0) && row <= maxRow)
+        // foreach (var row in rowsToCheck)
+        for (int row = _sensors.MinBy(p => p.y).y; row < _sensors.MaxBy(p => p.y).y; row++)
         {
             var colsWithNoBeacon = GetNoBeaconCols(row);
             // var colsSorted1 = colsWithNoBeacon.OrderByDescending(x => x);
@@ -74,7 +76,7 @@ public class Aoc2022_Day15 : BaseDay
             if (possibleCols.Count() == 1)
                 distressPos = (possibleCols.Single(), row);
             System.Console.WriteLine($"Row {row}, {possibleCols.Count()} possible beacons");
-            row++;
+            // row++;
         }
 
         var tuningFrequency = 4000000 * distressPos.x + distressPos.y;
@@ -97,5 +99,42 @@ public class Aoc2022_Day15 : BaseDay
         var distance = GetDistance(sensor, beacon);
         var noCheck = Enumerable.Range(sensor.y - distance, 2 * distance);
         return noCheck.ToList();
+    }
+
+    private List<(int x, int y)> GetRhombus((int x, int y) sensor, (int x, int y) beacon)
+    {
+        var pointsOnRhombus = new List<(int x, int y)>();
+        var distance = GetDistance(sensor, beacon);
+
+        (int x, int y) line1Start = (sensor.x - distance, sensor.y);
+        pointsOnRhombus.AddRange(GetPointsOnLine1or3(line1Start, distance));
+
+        // line2
+        (int x, int y) line2Start = (sensor.x, sensor.y - distance);
+
+        // line3
+        (int x, int y) line3Start = (sensor.x, sensor.y + distance);
+
+        // line4
+        (int x, int y) line4Start = (sensor.x - distance, sensor.y);
+
+        var points = pointsOnRhombus.Distinct().ToList();
+        return points;
+    }
+
+    private static IEnumerable<(int x, int y)> GetPointsOnLine1or3((int x, int y) lineStart, int distance)
+    {
+        var lineX = Enumerable.Range(lineStart.x, distance);
+        var lineY = Enumerable.Range(lineStart.y - distance, distance).Reverse();
+        var points = lineX.Zip(lineY, (x, y) => (x, y));
+        return points;
+    }
+
+    private static IEnumerable<(int x, int y)> GetPointsOnLine2or4((int x, int y) lineStart, int distance)
+    {
+        var lineX = Enumerable.Range(lineStart.x, distance);
+        var lineY = Enumerable.Range(lineStart.y, distance);
+        var points = lineX.Zip(lineY, (x, y) => (x, y));
+        return points;
     }
 }
