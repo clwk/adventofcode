@@ -6,7 +6,8 @@ using Microsoft.Extensions.Configuration;
 public static class Program
 {
     private static string ClassName { get; set; }
-    public static DateTime Today { get; set; } = DateTime.Now.AddHours(-6);
+    // public static DateTime Today { get; set; } = DateTime.Now.AddHours(-6);
+    public static DateTime Today { get; set; } = new DateTime(2022, 12, 17);
 
     static Program()
     {
